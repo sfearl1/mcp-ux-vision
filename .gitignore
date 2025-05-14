@@ -39,3 +39,5 @@ Thumbs.db
 # Backup files
 *.bak
 src/index.ts.bak
+
+reports/
