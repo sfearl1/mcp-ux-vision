@@ -26,8 +26,8 @@ const DOWNLOADS_DIR = path.join(os.homedir(), 'Downloads');
 // Define a fixed path for the test screenshot
 const TEST_SCREENSHOT_PATH = path.join(os.homedir(), 'Downloads', 'test_screenshot.png');
 
-// Set up logging to a file instead of console
-const logDir = "/Users/scott/Dropbox/work/resources/dev/ai/mcp-servers/mcp-vision/mcp-server-ai-vision/logs";
+// Set up logging to a file instead of console - using project-relative paths
+const logDir = process.env.MCP_VISION_LOG_DIR || path.join(process.cwd(), 'logs');
 try {
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir, { recursive: true });
@@ -752,8 +752,8 @@ Acknowledge estimations where necessary (e.g., for pixel sizes). Ensure every ap
     if (!analysisResult) { throw new Error("No analysis result found in session. Please run analyze_screen first."); }
     if (!analysisResult.elements || analysisResult.elements.length === 0) { logToFile("Warning: No detailed elements found in cached analysis result for report generation."); }
 
-    // Determine the base reports directory
-    const defaultBaseReportsDir = "/Users/scott/Dropbox/work/resources/dev/ai/mcp-servers/mcp-vision/mcp-server-ai-vision/reports";
+    // Determine the base reports directory using relative path or environment variable
+    const defaultBaseReportsDir = process.env.MCP_VISION_REPORTS_DIR || path.join(process.cwd(), 'reports');
     const baseReportsDir = outputPath || defaultBaseReportsDir;
 
     // Create a unique subdirectory for this report
