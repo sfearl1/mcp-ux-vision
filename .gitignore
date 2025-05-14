@@ -40,4 +40,4 @@ Thumbs.db
 *.bak
 src/index.ts.bak
 
-reports/
+reports/logs/
