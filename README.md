@@ -1,21 +1,25 @@
-# AI Vision MCP Server
+# MCP UX Vision
 
-A Model Context Protocol (MCP) server that provides AI-powered visual analysis capabilities for Claude and other MCP-compatible AI assistants.
+A Model Context Protocol (MCP) server that provides AI-powered visual analysis capabilities for UI/UX assessment. Compatible with Claude and other MCP-enabled AI assistants.
 
 ## Features
 
 - **Screenshot URL**: Capture screenshots of any website by providing a URL
-- **Visual Analysis**: Analyze UI elements, layouts, and content in screenshots
+- **Advanced UI Analysis**: Detect UI elements with detailed attributes, typography, colors, and accessibility metrics
+- **WCAG Contrast Analysis**: Automatically analyze text contrast ratios for accessibility compliance
+- **Visual Heuristics**: Evaluate visual hierarchy, element density, spacing consistency, and more
+- **Color Palette Detection**: Extract color palettes from interfaces for design system documentation
+- **Typography System Analysis**: Identify and categorize typography styles
 - **File Operations**: Read and modify files with line-specific precision
-- **Report Generation**: Create comprehensive UI/UX analysis reports
-- **Debugging Session**: Maintain context across multiple analysis steps
+- **Comprehensive Reporting**: Generate detailed UI/UX analysis reports in JSON format
+- **Single-Step Analysis**: Capture, analyze, and report in one operation
 
 ## Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/samihalawa/mcp-server-ai-vision.git
-cd mcp-server-ai-vision
+git clone https://github.com/sfearl1/mcp-ux-vision.git
+cd mcp-ux-vision
 
 # Install dependencies
 npm install
@@ -32,6 +36,14 @@ npm run build
 npm start
 ```
 
+### Environment Variables
+
+The server uses these environment variables for configuration:
+
+- `MCP_VISION_LOG_DIR`: Custom location for log files (defaults to `./logs`)
+- `MCP_VISION_REPORTS_DIR`: Custom location for report output (defaults to `./reports`)
+- `GEMINI_API_KEY`: Your Google Gemini API key for vision analysis
+
 ### Configuration
 
 Add the server to your MCP configuration:
@@ -39,15 +51,17 @@ Add the server to your MCP configuration:
 ```json
 {
   "servers": {
-    "ai-vision": {
+    "ux-vision": {
       "command": "/path/to/node",
-      "args": ["/path/to/mcp-server-ai-vision/build/index.js"],
+      "args": ["/path/to/mcp-ux-vision/build/index.js"],
       "enabled": true,
       "port": 3005,
       "environment": {
         "NODE_PATH": "/path/to/node_modules",
         "PATH": "/usr/local/bin:/usr/bin:/bin",
-        "GEMINI_API_KEY": "your-gemini-api-key"
+        "GEMINI_API_KEY": "your-gemini-api-key",
+        "MCP_VISION_LOG_DIR": "/path/to/logs",
+        "MCP_VISION_REPORTS_DIR": "/path/to/reports"
       }
     }
   }
@@ -68,9 +82,30 @@ Parameters:
 
 #### analyze_screen
 
-Analyze a screenshot with AI vision.
+Analyze a screenshot with AI vision, extracting detailed UI information.
 
 Parameters: None (uses the most recent screenshot)
+
+#### generate_report
+
+Generate a comprehensive UI/UX analysis report from the last analysis.
+
+Parameters:
+- `testUrl` (string, required): URL of the application being tested
+- `appName` (string, optional): Name of the application being analyzed
+- `output_path` (string, optional): Base directory path to save the report
+
+#### analyze_url_full_report
+
+One-step workflow that captures a screenshot, analyzes it, and generates a report.
+
+Parameters:
+- `url` (string, required): URL to capture, analyze, and report on
+- `appName` (string, optional): Name of the application being analyzed
+- `output_path` (string, optional): Base directory path to save the report
+- `fullPage` (boolean, optional): Whether to capture full page
+- `waitForSelector` (string, optional): CSS selector to wait for
+- `waitTime` (number, optional): Time to wait in milliseconds
 
 #### read_file
 
@@ -91,39 +126,35 @@ Parameters:
 - `endLine` (number): Ending line number to replace (1-indexed)
 - `content` (string): New content to replace the specified lines
 
-#### generate_report
-
-Generate a comprehensive UI/UX analysis report.
-
-Parameters:
-- `testUrl` (string): URL of the application being tested
-- `appName` (string, optional): Name of the application being analyzed
-- `date` (string, optional): Date of the analysis (YYYY-MM-DD)
-- `observations` (object): Observations structured as components, data state, interactions, etc.
-
 ## Example Workflow
 
-1. Take a screenshot of a website:
-   ```
-   screenshot_url(url: "https://example.com")
-   ```
+### Multi-step Analysis
 
-2. Analyze the screenshot:
-   ```
-   analyze_screen()
-   ```
+```
+# Take a screenshot of a website
+screenshot_url(url: "https://example.com")
 
-3. Generate a report based on the analysis:
-   ```
-   generate_report(testUrl: "https://example.com", observations: {...})
-   ```
+# Analyze the screenshot
+analyze_screen()
+
+# Generate a report based on the analysis
+generate_report(testUrl: "https://example.com", appName: "Example Website")
+```
+
+### One-step Analysis
+
+```
+# Do everything in one step
+analyze_url_full_report(url: "https://example.com", appName: "Example Website")
+```
 
 ## Requirements
 
 - Node.js 14+
 - Playwright for browser automation
 - Gemini API key for AI vision analysis
+- wcag-contrast library for accessibility analysis
 
 ## License
 
-MIT 
+MIT
