@@ -1,159 +1,86 @@
 # MCP UX Vision
 
-A Model Context Protocol (MCP) server that provides AI-powered visual analysis capabilities for UI/UX assessment. Compatible with Claude and other MCP-enabled AI assistants.
+An MCP server that provides AI-powered visual analysis for UI/UX assessment using Google's Gemini Vision API.
 
 ## Features
 
-- **Screenshot URL**: Capture screenshots of any website by providing a URL
-- **Advanced UI Analysis**: Detect UI elements with detailed attributes, typography, colors, and accessibility metrics
-- **WCAG Contrast Analysis**: Automatically analyze text contrast ratios for accessibility compliance
-- **Visual Heuristics**: Evaluate visual hierarchy, element density, spacing consistency, and more
-- **Color Palette Detection**: Extract color palettes from interfaces for design system documentation
-- **Typography System Analysis**: Identify and categorize typography styles
-- **File Operations**: Read and modify files with line-specific precision
-- **Comprehensive Reporting**: Generate detailed UI/UX analysis reports in JSON format
-- **Single-Step Analysis**: Capture, analyze, and report in one operation
+- Screenshot capture from URLs
+- AI-powered UI element detection and analysis
+- WCAG contrast ratio analysis
+- Color palette and typography extraction
+- Visual accessibility auditing
+- Comprehensive JSON reporting
 
 ## Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/sfearl1/mcp-ux-vision.git
+git clone <repository-url>
 cd mcp-ux-vision
-
-# Install dependencies
 npm install
-
-# Build the server
 npm run build
 ```
 
-## Usage
+## Configuration
 
-### Starting the Server
-
-```bash
-npm start
-```
-
-### Environment Variables
-
-The server uses these environment variables for configuration:
-
-- `MCP_VISION_LOG_DIR`: Custom location for log files (defaults to `./logs`)
-- `MCP_VISION_REPORTS_DIR`: Custom location for report output (defaults to `./reports`)
-- `GEMINI_API_KEY`: Your Google Gemini API key for vision analysis
-
-### Configuration
-
-Add the server to your MCP configuration:
-
+Add to your MCP client configuration:
 ```json
 {
   "servers": {
     "ux-vision": {
-      "command": "/path/to/node",
-      "args": ["/path/to/mcp-ux-vision/build/index.js"],
-      "enabled": true,
-      "port": 3005,
-      "environment": {
-        "NODE_PATH": "/path/to/node_modules",
-        "PATH": "/usr/local/bin:/usr/bin:/bin",
-        "GEMINI_API_KEY": "your-gemini-api-key",
-        "MCP_VISION_LOG_DIR": "/path/to/logs",
-        "MCP_VISION_REPORTS_DIR": "/path/to/reports"
-      }
+      "command": "node",
+      "args": [
+        "path/to/mcp-ux-vision/build/index.js"
+      ]
     }
   }
 }
 ```
 
-### Available Tools
+## Tools
 
-#### screenshot_url
+### screenshot_url
+Capture a screenshot of any webpage.
+- `url` (required): URL to screenshot
+- `fullPage` (optional): Capture full page vs viewport
+- `waitTime` (optional): Delay before capture (ms)
 
-Take a screenshot of a URL using a web browser.
+### analyze_screen
+Analyze the most recent screenshot with AI, extracting:
+- UI elements with geometry and styling
+- Color palette and typography
+- Accessibility metrics
+- Visual hierarchy assessment
 
-Parameters:
-- `url` (string, required): URL to capture a screenshot of (e.g., http://localhost:4999, https://google.com)
-- `fullPage` (boolean, optional): Whether to capture full page or just viewport. Default: false
-- `waitForSelector` (string, optional): CSS selector to wait for before taking screenshot
-- `waitTime` (number, optional): Time to wait in milliseconds before taking screenshot. Default: 1000
+### generate_report
+Create a comprehensive JSON report from the last analysis.
+- `testUrl` (required): URL that was analyzed
+- `appName` (optional): Application name
+- `output_path` (optional): Report output directory
 
-#### analyze_screen
+### analyze_url_full_report
+One-step workflow combines all above tools with the same parameters: screenshot → analyze → report. 
 
-Analyze a screenshot with AI vision, extracting detailed UI information.
+## Usage
 
-Parameters: None (uses the most recent screenshot)
+Once the server is running and configured in your MCP client (like Claude), you can use natural language prompts to call the tools:
 
-#### generate_report
+**screenshot_url**
+- "Take a screenshot of https://example.com"
+- "Capture a full page screenshot of localhost:3000"
+- "Screenshot https://myapp.com and wait for the .loading element to disappear"
 
-Generate a comprehensive UI/UX analysis report from the last analysis.
+**analyze_screen**
+- "Analyze the current screenshot for UI elements"
+- "Examine the accessibility of this interface"
+- "What UI components do you see in the screenshot?"
 
-Parameters:
-- `testUrl` (string, required): URL of the application being tested
-- `appName` (string, optional): Name of the application being analyzed
-- `output_path` (string, optional): Base directory path to save the report
+**generate_report**
+- "Create a UX report for the analysis of https://example.com"
+- "Generate a comprehensive UI audit report"
 
-#### analyze_url_full_report
-
-One-step workflow that captures a screenshot, analyzes it, and generates a report.
-
-Parameters:
-- `url` (string, required): URL to capture, analyze, and report on
-- `appName` (string, optional): Name of the application being analyzed
-- `output_path` (string, optional): Base directory path to save the report
-- `fullPage` (boolean, optional): Whether to capture full page
-- `waitForSelector` (string, optional): CSS selector to wait for
-- `waitTime` (number, optional): Time to wait in milliseconds
-
-#### read_file
-
-Read content from a file between specified line numbers.
-
-Parameters:
-- `path` (string): Path to the file
-- `startLine` (number): Starting line number (1-indexed)
-- `endLine` (number): Ending line number (1-indexed)
-
-#### modify_file
-
-Modify content in a file between specified line numbers.
-
-Parameters:
-- `path` (string): Path to the file
-- `startLine` (number): Starting line number to replace (1-indexed)
-- `endLine` (number): Ending line number to replace (1-indexed)
-- `content` (string): New content to replace the specified lines
-
-## Example Workflow
-
-### Multi-step Analysis
-
-```
-# Take a screenshot of a website
-screenshot_url(url: "https://example.com")
-
-# Analyze the screenshot
-analyze_screen()
-
-# Generate a report based on the analysis
-generate_report(testUrl: "https://example.com", appName: "Example Website")
-```
-
-### One-step Analysis
-
-```
-# Do everything in one step
-analyze_url_full_report(url: "https://example.com", appName: "Example Website")
-```
-
-## Requirements
-
-- Node.js 14+
-- Playwright for browser automation
-- Gemini API key for AI vision analysis
-- wcag-contrast library for accessibility analysis
+**analyze_url_full_report**
+- "Take a screenshot of https://example.com and create a full UX analysis report"
+- "Analyze https://myapp.com and generate a complete accessibility audit"
 
 ## License
 
